@@ -1,9 +1,10 @@
 from konlpy.tag import Okt
 from collections import Counter
 import pandas as pd
+from datetime import date
 
-csv_file_list = ['arduino-mechasolution.csv','bosuk10-haruclass.csv','bosuk10-limenamu.csv']
-
+#csv_file_list = ['arduino-mechasolution.csv','bosuk10-haruclass.csv','bosuk10-limenamu.csv']
+csv_file_list = ['0-2021-07-04.csv','1-2021-07-04.csv','2-2021-07-04.csv','3-2021-07-04.csv','4-2021-07-04.csv','5-2021-07-04.csv','6-2021-07-04.csv']
 
 def readCSVFromName(_csv_file_name=None):
     try:
@@ -35,26 +36,64 @@ def getMost100CountFromStr(_str):
     noun_list = count.most_common(100)
     return noun_list
 
-def storeNounListCSVFromFileName(_csv_file_name):
+def getAllCountFromStr(_str):
+    count = Counter(_str)
+    noun_list = count.most_common()
+    return noun_list
 
-    df = readCSVFromName(_csv_file_name)
+def getAllCountFromStrs(_str_list):
+    count_list = [Counter(_str) for _str in _str_list]
+    count_sum = sum(count_list,Counter())
+    return count_sum.most_common()
 
-    #OKT 명사 추출을 위해서 하나의 거대한 문자열 만들기.
-    review = makeStrWithDf(df,'reviewContent')
-    nouns = getNouns(review)
-    noun_list = getMost100CountFromStr(nouns)
-    
+def getMost100CountFromStrs(_str_list):
+    count_list = [Counter(_str) for _str in _str_list]
+    count_sum = sum(count_list,Counter())
+    return count_sum.most_common(100)
+
+def readCSVFromFileList(_file_list):
+    df_list = [readCSVFromName(file_name) for file_name in _file_list]
+    return df_list
+
+def storeNounListCSVFromFiles(_csv_file_list):
+    # csv파일이름list로부터 DataFrame list 생성
+    df_list = readCSVFromFileList(_csv_file_list)
+
+    # DataFrame list로부터 review말뭉치 list 생성
+    review_list = [makeStrWithDf(df,'reviewContent') for df in df_list]
+
+    # 말뭉치 list로부터 명사 추출한 list의 list 생성
+    noun_list = [getNouns(review) for review in review_list]
+
+    # 명사추출 list의 list로부터 전체 명사당 빈도수 list 생성
+    noun_frequency_list = getAllCountFromStrs(noun_list)
 
     noun_dict = dict()
-    for noun,noun_count in noun_list:
+    for noun,noun_count in noun_frequency_list:
         noun_dict[noun] = noun_count
 
     noun_df = pd.DataFrame(noun_dict,index=['noun_count'])
-    noun_df.to_csv('noun_' + _csv_file_name)
+    noun_df.to_csv(f'noun_frquency-{date.today().isoformat()}.csv')
+
+# def storeNounListCSVFromFileName(_csv_file_name):
+
+#     df = readCSVFromName(_csv_file_name)
+
+#     #OKT 명사 추출을 위해서 하나의 거대한 문자열 만들기.
+#     review = makeStrWithDf(df,'reviewContent')
+#     nouns = getNouns(review)
+#     #noun_list = getMost100CountFromStr(nouns)
+#     noun_list = getAllCountFromStr(nouns)
+
+#     noun_dict = dict()
+#     for noun,noun_count in noun_list:
+#         noun_dict[noun] = noun_count
+
+#     noun_df = pd.DataFrame(noun_dict,index=['noun_count'])
+#     noun_df.to_csv('Allnoun_' + _csv_file_name)
 
 def main():
-    for filename in csv_file_list:
-        storeNounListCSVFromFileName(filename)
+    storeNounListCSVFromFiles(csv_file_list)
 
 if __name__ == '__main__':
     main()
