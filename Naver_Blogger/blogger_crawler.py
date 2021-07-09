@@ -1,12 +1,11 @@
-import re
-import requests
-from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import StaleElementReferenceException, TimeoutException
 from selenium.webdriver.chrome.options import Options
+import pandas as pd
+from datetime import date
 
 import time
 #base url은 해당 포맷을 따라야한다.
@@ -14,6 +13,7 @@ import time
 #nick_name = 'yaesul1205'
 nick_name = str(input('블로그 이름을 입력: '))
 base_url = f'https://blog.naver.com/PostList.naver?blogId={nick_name}&categoryNo=0&from=postList'
+print('start!')
 
 # def getNickName(_url):
 #     nickname = re.findall('blogId=.+',_url)[0][7:]
@@ -62,5 +62,10 @@ while True:
         except TimeoutException as e:
             print(e)
             break
-print(len(bottom_list))
-print(bottom_list)
+
+# print(len(bottom_list))
+# print(bottom_list)
+
+blogger_df = pd.DataFrame(bottom_list,columns=['Link','Title'])
+blogger_df.to_csv(f'{nick_name}-{date.today().isoformat()}.csv')
+print('finish!')
