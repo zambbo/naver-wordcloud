@@ -7,7 +7,7 @@ file_name = 'yaesul1205-2021-07-09.csv'
 nick_name = re.findall('[^-]+-{1}',file_name)[0][:-1]
 
 category_name = ['A','B']
-category_list = [('A',['충북','프리다이빙']),('B',['맛집','제주'])]
+category_list = [('A',['충북','프리다이빙','하이']),('B',['맛집','제주'])]
 category_dataframe_list = []
 base_df = pd.read_csv(file_name)
 
@@ -28,7 +28,8 @@ for category,category_dataframe_ in zip(category_list,category_dataframe_list):
     category_dataframe_items = category_dataframe_[1]
 
     category_input = dict()
-    category_item_mulcol = list(category_dataframe_items[0].columns)[1:]*2
+    item_len = len(category[1])
+    category_item_mulcol = list(category_dataframe_items[0].columns)[1:]*item_len
     category_item_mulcol = [value + category[1][int(idx/2)] for idx,value in enumerate(category_item_mulcol)]
 
     idx = 0
