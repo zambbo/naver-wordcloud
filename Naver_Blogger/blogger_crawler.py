@@ -14,13 +14,28 @@ import time
 
 #nick_name = str(input('블로그 이름을 입력: '))
 
-nick_name_list = ['dream8503','nora_nori','serom11','maize210','wseblove']
+nick_name_list = ['nora_nori','serom11','maize210','wseblove','dream8503']
+#nick_name_list = ['haniyamyam','beauvelye','wlgysnl23','oksubenne','wj_2169','eve14eve','bichon-haru','gamja321','nce0623','kimcoco1']
 # def getNickName(_url):
 #     nickname = re.findall('blogId=.+',_url)[0][7:]
 #     am_index = nickname.find("&")
 #     nickname = nickname[:am_index]
 #     return nickname
 def saveAllPostsOfBlogger(_nickname):
+    posts = crawling_blogger(_nickname)
+    blogger_df = pd.DataFrame(posts,columns=['Link','Title'])
+    blogger_df.to_csv(f'{_nickname}-{date.today().isoformat()}.csv')
+
+def getAllPostsOfBloggers(_nickname_list):
+
+    blogger_posts_list = []
+    for nickname in _nickname_list:
+        posts = crawling_blogger(nickname)
+        blogger_posts_list.append((nickname,posts))
+        time.sleep(2)
+    return blogger_posts_list
+
+def crawling_blogger(_nickname):
     base_url = f'https://blog.naver.com/PostList.naver?blogId={_nickname}&categoryNo=0&from=postList'
     print('start!')
     options = Options()
@@ -55,7 +70,6 @@ def saveAllPostsOfBlogger(_nickname):
                     break
                 for elem in element.find_elements_by_tag_name('a'):
                     bottom_list.append((elem.get_attribute('href'),elem.text))
-
             try:
                 wait.until(EC.element_to_be_clickable,(By.CSS_SELECTOR,'.next.pcol2._next_category'))
                 next_button = driver.find_element_by_css_selector('.next.pcol2._next_category')
@@ -74,15 +88,13 @@ def saveAllPostsOfBlogger(_nickname):
         except:
             print('Cannot crawl this blogger.')
             driver.quit()
-            return
+            return []
 
     print(len(bottom_list))
     print(bottom_list)
-
-    blogger_df = pd.DataFrame(bottom_list,columns=['Link','Title'])
-    blogger_df.to_csv(f'{nick_name}-{date.today().isoformat()}.csv')
     print('finish!')
     driver.quit()
+    return bottom_list
 
 if __name__ == '__main__':
     for idx,nick_name in enumerate(nick_name_list):
