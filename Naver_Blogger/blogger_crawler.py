@@ -52,11 +52,11 @@ def crawling_blogger(_nickname):
             print(f'\r{idx}',end='')
             idx = idx + 1
             try:
-                wait.until(EC.presence_of_element_located,(By.ID,'postBottomTitleListBody'))
+                wait.until(EC.presence_of_element_located,(By.ID,'bottom-list'))
                 date = driver.find_element_by_css_selector('.date.pcol2')
-                element = driver.find_element_by_id('postBottomTitleListBody')
+                element = driver.find_element_by_id('bottom-list')
             except StaleElementReferenceException:
-                element = driver.find_element_by_id('postBottomTitleListBody')
+                element = driver.find_element_by_id('bottom-list')
                 date = driver.find_element_by_css_selector('.date.pcol2')
             except:
                 print("bottom error")
@@ -65,7 +65,7 @@ def crawling_blogger(_nickname):
                 try:
                     date = int(date.text.split('.')[0])
                 except:
-                    continue
+                    date = 2021
                 if date<2016:
                     break
                 for elem in element.find_elements_by_tag_name('a'):

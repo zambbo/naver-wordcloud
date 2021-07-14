@@ -8,7 +8,7 @@ test_category_list = [('뷰티',['네일','샴푸','선크림','틴트','에센�
 ('반려동물',['고양이','강아지','집사']),
 ('IT',['키보드','마우스','아이폰','카메라'])] 
 
-nick_name_list = ['beauvelye','wlgysnl23','oksubenne','wj_2169','eve14eve','bichon-haru','gamja321','nce0623','kimcoco1','haniyamyam']
+nick_name_list = ['haniyamyam','beauvelye','wlgysnl23','oksubenne','wj_2169','eve14eve','bichon-haru','gamja321','nce0623','kimcoco1']
 
 def makeItemListFromCategoryList(_category_lists):
     item_list = []
