@@ -41,7 +41,7 @@ class TfIdf:
         noad_df.to_csv('noads.csv')
         print('finish!')
 
-    def noad_tfidf(self,_df,_type=None):
+    def noad_tfidf(self,_df,_type=None,_normalize=None):
         print('start!')
         _df = self.ad2bin(_df)
         _df_NOAD = _df[_df['AD'] == 0]
@@ -55,8 +55,8 @@ class TfIdf:
         key_list = item_dict.keys()
 
         idf_dict = self.idf_dict(key_list,NOAD_POSTS)
-
         print(idf_dict)
+
         tfidf_list = []
         for post in NOAD_POSTS:
             tfidf_list_ = []
@@ -70,12 +70,15 @@ class TfIdf:
 
 
 
-        for index,tfidfs in enumerate(tfidf_list):
-            tfidf_list[index] = self.normalize(tfidfs)
+        if _normalize:
+            for index,tfidfs in enumerate(tfidf_list):
+                tfidf_list[index] = self.normalize(tfidfs)
 
         noad_df = pd.DataFrame(data=tfidf_list,columns=key_list)
         if _type is 'one':
             noad_df.to_csv('noad-one.csv')
+        elif _normalize is 'normalize':
+            noad_df.to_csv('noad-normalize.csv')
         else:
             noad_df.to_csv('noad.csv')
         self.noad_df = noad_df
@@ -105,7 +108,7 @@ class TfIdf:
         ad_df.to_csv('ads.csv')
         print('finish!')
 
-    def ad_tfidf(self,_df,_type=None):
+    def ad_tfidf(self,_df,_type=None,_normalize=None):
         print('start!')
         _df = self.ad2bin(_df)
         df_AD = _df[_df['AD'] == 1]
@@ -118,7 +121,6 @@ class TfIdf:
 
         idf_dict = self.idf_dict(key_list,AD_POSTS)
 
-        print(idf_dict)
         tfidf_list = []
         for post in AD_POSTS:
             tfidf_list_ = []
@@ -129,13 +131,15 @@ class TfIdf:
                     tfidf_list_.append(self.tfidf_dict(word,post,idf_dict))
             tfidf_list.append(tfidf_list_)
             
-
-        for index,tfidfs in enumerate(tfidf_list):
-            tfidf_list[index] = self.normalize(tfidfs)
+        if _normalize:
+            for index,tfidfs in enumerate(tfidf_list):
+                tfidf_list[index] = self.normalize(tfidfs)
 
         ad_df = pd.DataFrame(data=tfidf_list,columns=key_list)
         if _type is 'one':
             ad_df.to_csv('ad-one.csv')
+        elif _normalize is 'normalize':
+            ad_df.to_csv('ad-normalize.csv')
         else:
             ad_df.to_csv('ad.csv')
 
@@ -199,6 +203,7 @@ class TfIdf:
         for t in t_list:
             t_idf = self.idf(t,docs)
             idf_dict[t] = t_idf
+        
         return idf_dict
 
     def tfidf(self,t,d,docs):
